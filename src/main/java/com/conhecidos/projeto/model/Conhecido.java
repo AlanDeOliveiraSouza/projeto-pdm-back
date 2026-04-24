@@ -1,5 +1,6 @@
 package com.conhecidos.projeto.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 
 public class Conhecido {
@@ -7,7 +8,10 @@ public class Conhecido {
     private Integer id;
     private String nome;
     private Integer idade;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dataConheceu;
+
     private Integer anosConhece;
     private String ocasiao;
     private String genero;
@@ -87,15 +91,14 @@ public class Conhecido {
     }
 
     public static boolean[] compararConhecido(Conhecido conhecido, Conhecido conhecidoBanco) {
-        boolean[] comparacao = {false, false, false, false, false, false, false};
+        boolean[] comparacao = {false, false, false, false, false, false};
 
-        if(conhecido.getId().equals(conhecidoBanco.getId()) && conhecido.getId() != null) { comparacao[0] = true; }
-        if(conhecido.getNome().equals(conhecidoBanco.getNome()) && conhecido.getNome() != null) { comparacao[1] = true; }
-        if(conhecido.getIdade().equals(conhecidoBanco.getIdade()) && conhecido.getIdade() != null) { comparacao[2] = true; }
-        if(conhecido.getDataConheceu() == conhecidoBanco.getDataConheceu() && conhecido.getDataConheceu() != null) { comparacao[3] = true; }
-        if(conhecido.getAnosConhece().equals(conhecidoBanco.getAnosConhece()) && conhecido.getAnosConhece() != null) { comparacao[4] = true; }
-        if(conhecido.getOcasiao().equals(conhecidoBanco.getOcasiao()) && conhecido.getOcasiao() != null) { comparacao[5] = true; }
-        if(conhecido.getGenero().equals(conhecidoBanco.getGenero()) && conhecido.getGenero() != null) { comparacao[6] = true; }
+        if(conhecido.getNome().equals(conhecidoBanco.getNome()) && conhecido.getNome() != null) { comparacao[0] = true; }
+        if(conhecido.getIdade().equals(conhecidoBanco.getIdade()) && conhecido.getIdade() != null) { comparacao[1] = true; }
+        if(conhecido.getDataConheceu().isEqual(conhecidoBanco.getDataConheceu()) && conhecido.getDataConheceu() != null) { comparacao[2] = true; }
+        if(conhecido.getAnosConhece().equals(conhecidoBanco.getAnosConhece()) && conhecido.getAnosConhece() != null) { comparacao[3] = true; }
+        if(conhecido.getOcasiao().equals(conhecidoBanco.getOcasiao()) && conhecido.getOcasiao() != null) { comparacao[4] = true; }
+        if(conhecido.getGenero().equals(conhecidoBanco.getGenero()) && conhecido.getGenero() != null) { comparacao[5] = true; }
 
         return comparacao;
     }

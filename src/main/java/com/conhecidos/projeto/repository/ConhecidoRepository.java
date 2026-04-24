@@ -119,20 +119,20 @@ public class ConhecidoRepository {
         boolean[] comparacao = Conhecido.compararConhecido(conhecido, conhecidoBanco);
 
         int qtde = 0; // Variável para contar quantas ocorrencias são iguais, também é usada para contar quantos valores faltam no comando sql
-        for(int i = 0; i<7; i++) {
+        for(int i = 0; i<6; i++) {
             if(comparacao[i]) {qtde++;}
         }
-        if(qtde == 7) {
+        if(qtde == 6) {
             // Significa que todos os dados são iguais
-            System.out.println("Os dados não foram alterados.");
+            System.out.println("Os dados não foram alterados. Todos os dados são iguais.");
             return;
         }
 
-        String[] tabela = {"id_conhecido", "nm_conhecido", "qt_idade", "dt_conheceu", "qt_anos_conhece", "ds_ocasiao", "nm_genero"};
+        String[] tabela = {"nm_conhecido", "qt_idade", "dt_conheceu", "qt_anos_conhece", "ds_ocasiao", "nm_genero"};
 
         sql = "UPDATE conhecido SET ";
-        for(int i = 0; i<7; i++) {
-            if(i > 0 && qtde < 7) {
+        for(int i = 0; i<6; i++) {
+            if(i > 0 && qtde < 6) {
                 // Se o item anterior for inserido no comando, seu nome será anulado
                 if(tabela[i-1].equals("")) {
                     sql += ", ";
@@ -153,16 +153,15 @@ public class ConhecidoRepository {
 
         try(Connection conexao = MySQLConnection.conectar(); PreparedStatement pstmt = conexao.prepareStatement(sql);) {
             int i = 1; // Conta os parâmetros a serem alterados no banco
-            for(int j = 0; j<7; j++) {
+            for(int j = 0; j<6; j++) {
                 if(!comparacao[j]) {
                     switch(j) {
-                        case 0 -> pstmt.setInt(i, conhecido.getId());
-                        case 1 -> pstmt.setString(i, conhecido.getNome());
-                        case 2 -> pstmt.setInt(i, conhecido.getIdade());
-                        case 3 -> pstmt.setString(i, conhecido.getDataConheceu().toString());
-                        case 4 -> pstmt.setInt(i, conhecido.getAnosConhece());
-                        case 5 -> pstmt.setString(i, conhecido.getOcasiao());
-                        case 6 -> pstmt.setString(i, conhecido.getGenero());
+                        case 0 -> pstmt.setString(i, conhecido.getNome());
+                        case 1 -> pstmt.setInt(i, conhecido.getIdade());
+                        case 2 -> pstmt.setString(i, conhecido.getDataConheceu().toString());
+                        case 3 -> pstmt.setInt(i, conhecido.getAnosConhece());
+                        case 4 -> pstmt.setString(i, conhecido.getOcasiao());
+                        case 5 -> pstmt.setString(i, conhecido.getGenero());
                         default -> System.out.println("Opção inválida!");
                     }
                     i++;

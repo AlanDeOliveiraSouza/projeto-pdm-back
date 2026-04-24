@@ -17,14 +17,16 @@ public class Main {
         MySQLConnection.criarBancoDeDados();
 
         // Iniciando aplicação
-        Javalin app = Javalin.create().start(7070);
+        Javalin app = Javalin.create(config -> {
+            // Habilita o CORS para permitir requisições do front
+            config.bundledPlugins.enableCors(cors -> {
+                // Permite qualquer origem se conecte
+                cors.addRule(it -> {
+                    it.anyHost();
+                });
+            });
+        }).start(7070);
 
-        try {
-            Conhecido c = new Conhecido(6, "Ricardo Silva", 26, LocalDate.parse("2026-04-21"), 0, "Em um casamento", "Masculino");
-            ConhecidoRepository.atualizarConhecido(c);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
         // ENDPOINTS:
 
         // Endpoint da rota (raiz) "/api"
@@ -51,7 +53,7 @@ public class Main {
                 Conhecido conhecido = ConhecidoRepository.getConhecidoPorId(id);
                 if(conhecido.getId() != null) {
                     ctx.json(conhecido);
-                    //ctx.json(Map.of("success", true));
+                    ctx.json(Map.of("success", true));
                 } else {
                     ctx.json(Map.of("success", false));
                     System.out.println("Conhecido não encontrado");
@@ -71,7 +73,7 @@ public class Main {
                 Conhecido conhecido = ctx.bodyAsClass(Conhecido.class);
                 ConhecidoRepository.cadastrarConhecido(conhecido);
                 ctx.json(conhecido);
-                //ctx.json(Map.of("success", true));
+                ctx.json(Map.of("success", true));
             } catch(Exception e) {
                 ctx.json(Map.of("success", false));
                 System.out.println(e);
@@ -97,7 +99,7 @@ public class Main {
             try{
                 Integer id = Integer.valueOf(ctx.pathParam("id"));
                 ConhecidoRepository.deletarConhecido(id);
-                //ctx.json(Map.of("success", true));
+                ctx.json(Map.of("success", true));
             } catch(NumberFormatException e) {
                 System.out.println("Valor de id inválido: " + e);
                 ctx.json(Map.of("success", false));
