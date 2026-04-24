@@ -9,6 +9,7 @@ public class Conhecido {
     private String nome;
     private Integer idade;
 
+    // Garante que a conversão para json torne a data uma string "yyyy-MM-dd" em vez de array ['yyyy', 'MM', 'dd']
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dataConheceu;
 

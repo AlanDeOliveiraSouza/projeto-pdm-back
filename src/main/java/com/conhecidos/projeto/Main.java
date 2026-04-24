@@ -25,7 +25,7 @@ public class Main {
                     it.anyHost();
                 });
             });
-        }).start(7070);
+        }).start("192.168.1.39", 7070); // IP escolhido ou deixe nulo ".start(7070)" para localhost
 
         // ENDPOINTS:
 
