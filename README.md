@@ -23,7 +23,7 @@ Antes de começar, você precisará ter instalado em sua máquina:
    ```
  2. Na IDE, compile e execute o projeto
  3. A API estará disponível em http://localhost:7070 (ou a porta configurada no Javalin).
-## 📌 Endpoints Principais (Exemplos)
+## 📌 Endpoints
 | Método | Endpoint | Descrição |
 |---|---|---|
 | **GET** | /conhecidos | Retorna todos os conhecidos. |
