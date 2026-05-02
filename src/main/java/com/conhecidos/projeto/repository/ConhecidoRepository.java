@@ -138,7 +138,6 @@ public class ConhecidoRepository {
                     sql += ", ";
                 }
             }
-            System.out.println(comparacao[i]);
             if(!comparacao[i]) {
                 sql += tabela[i];
                 sql += " = ?";
@@ -148,8 +147,6 @@ public class ConhecidoRepository {
         }
         sql += " WHERE id_conhecido = ?";
         // A lógica acima verifica quais itens do conhecido foram atualizados e insere-os no comando sql de atualização
-
-        System.out.println(sql);
 
         try(Connection conexao = MySQLConnection.conectar(); PreparedStatement pstmt = conexao.prepareStatement(sql);) {
             int i = 1; // Conta os parâmetros a serem alterados no banco

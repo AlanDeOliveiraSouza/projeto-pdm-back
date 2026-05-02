@@ -39,7 +39,6 @@ public class Main {
             try {
                 List<Conhecido> conhecidos = ConhecidoRepository.getTodosConhecidos();
                 ctx.json(conhecidos);
-                //ctx.json(Map.of("success", true));
             } catch(Exception e) {
                 ctx.json(Map.of("success", false));
                 System.out.println(e);
@@ -53,7 +52,6 @@ public class Main {
                 Conhecido conhecido = ConhecidoRepository.getConhecidoPorId(id);
                 if(conhecido.getId() != null) {
                     ctx.json(conhecido);
-                    ctx.json(Map.of("success", true));
                 } else {
                     ctx.json(Map.of("success", false));
                     System.out.println("Conhecido não encontrado");
@@ -72,7 +70,6 @@ public class Main {
             try {
                 Conhecido conhecido = ctx.bodyAsClass(Conhecido.class);
                 ConhecidoRepository.cadastrarConhecido(conhecido);
-                ctx.json(conhecido);
                 ctx.json(Map.of("success", true));
             } catch(Exception e) {
                 ctx.json(Map.of("success", false));
@@ -85,8 +82,7 @@ public class Main {
             try {
                 Conhecido conhecido = ctx.bodyAsClass(Conhecido.class);
                 ConhecidoRepository.atualizarConhecido(conhecido);
-                ctx.json(conhecido);
-                //ctx.json(Map.of("success", true));
+                ctx.json(Map.of("success", true));
             } catch(Exception e) {
                 ctx.json(Map.of("success", false));
                 e.printStackTrace();
