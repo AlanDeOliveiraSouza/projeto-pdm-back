@@ -2,6 +2,7 @@ package com.conhecidos.projeto.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
+import com.conhecidos.projeto.model.Coordenada;
 
 public class Conhecido {
 
@@ -13,20 +14,22 @@ public class Conhecido {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dataConheceu;
 
-    private Integer anosConhece;
+    private String imagem;
     private String ocasiao;
     private String genero;
+    private Coordenada coordenada;
 
     public Conhecido(){}
 
-    public Conhecido(Integer id, String nome, Integer idade, LocalDate dataConheceu, Integer anosConhece, String ocasiao, String genero){
+    public Conhecido(Integer id, String nome, Integer idade, LocalDate dataConheceu, String imagem, String ocasiao, String genero, Coordenada coordenada){
         this.id = id;
         this.nome = nome;
         this.idade = idade;
         this.dataConheceu = dataConheceu;
-        this.anosConhece = anosConhece;
+        this.imagem = imagem;
         this.ocasiao = ocasiao;
         this.genero = genero;
+        this.coordenada = coordenada;
     }
 
     public Integer getId() {
@@ -61,12 +64,12 @@ public class Conhecido {
         this.dataConheceu = dataConheceu;
     }
 
-    public Integer getAnosConhece() {
-        return anosConhece;
+    public String getImagem() {
+        return imagem;
     }
 
-    public void setAnosConhece(Integer anosConhece) {
-        this.anosConhece = anosConhece;
+    public void setImagem(String imagem) {
+        this.imagem = imagem;
     }
 
     public String getOcasiao() {
@@ -85,9 +88,17 @@ public class Conhecido {
         this.genero = genero;
     }
 
+    public Coordenada getCoordenada() {
+        return coordenada;
+    }
+
+    public void setCoordenada(Coordenada coordenada) {
+        this.coordenada = coordenada;
+    }
+
     @Override
     public String toString() {
-        String resultado = id + " - " + nome + " - " + idade + " - " + dataConheceu + " - " + anosConhece + " - " + ocasiao + " - " + genero;
+        String resultado = "Conhecido: " + id + " - " + nome + " - " + idade + " - " + dataConheceu + " - " + ocasiao + " - " + genero + "\nCoordenadas Imagem: " + coordenada.toString();
         return resultado;
     }
 
@@ -97,7 +108,7 @@ public class Conhecido {
         if(conhecido.getNome().equals(conhecidoBanco.getNome()) && conhecido.getNome() != null) { comparacao[0] = true; }
         if(conhecido.getIdade().equals(conhecidoBanco.getIdade()) && conhecido.getIdade() != null) { comparacao[1] = true; }
         if(conhecido.getDataConheceu().isEqual(conhecidoBanco.getDataConheceu()) && conhecido.getDataConheceu() != null) { comparacao[2] = true; }
-        if(conhecido.getAnosConhece().equals(conhecidoBanco.getAnosConhece()) && conhecido.getAnosConhece() != null) { comparacao[3] = true; }
+        if(conhecido.getImagem().equals(conhecidoBanco.getImagem()) && conhecido.getImagem() != null) { comparacao[3] = true; }
         if(conhecido.getOcasiao().equals(conhecidoBanco.getOcasiao()) && conhecido.getOcasiao() != null) { comparacao[4] = true; }
         if(conhecido.getGenero().equals(conhecidoBanco.getGenero()) && conhecido.getGenero() != null) { comparacao[5] = true; }
 

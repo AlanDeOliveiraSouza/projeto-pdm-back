@@ -4,28 +4,41 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.conhecidos.projeto.database.MySQLConnection;
 import com.conhecidos.projeto.model.Conhecido;
+import com.conhecidos.projeto.model.Coordenada;
 
 public class ConhecidoRepository {
 
     public static void cadastrarConhecido(Conhecido conhecido) throws Exception {
 
-        String sql = "INSERT INTO conhecido (nm_conhecido, qt_idade, dt_conheceu, qt_anos_conhece, ds_ocasiao, nm_genero) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO conhecido (nm_conhecido, qt_idade, dt_conheceu, im_conhecido, ds_ocasiao, nm_genero) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try(Connection conexao = MySQLConnection.conectar(); PreparedStatement pstmt = conexao.prepareStatement(sql);) {
+        try(Connection conexao = MySQLConnection.conectar(); PreparedStatement pstmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
             pstmt.setString(1, conhecido.getNome());
             pstmt.setInt(2, conhecido.getIdade());
             pstmt.setString(3, conhecido.getDataConheceu().toString());
-            pstmt.setInt(4, conhecido.getAnosConhece());
+            pstmt.setString(4, conhecido.getImagem());
             pstmt.setString(5, conhecido.getOcasiao());
             pstmt.setString(6, conhecido.getGenero());
 
             pstmt.executeUpdate();
+            
+            // Obtendo o ID gerado para cadastrar a coordenada
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if(rs.next()) {
+                Integer idGerado = rs.getInt(1);
+                if(conhecido.getCoordenada() != null) {
+                    conhecido.getCoordenada().setIdConhecido(idGerado);
+                    CoordenadaRepository.cadastrarCoordenada(conhecido.getCoordenada());
+                }
+            }
+
             System.out.println("Conhecido cadastrado");
 
         } catch(SQLException e) {
@@ -48,9 +61,12 @@ public class ConhecidoRepository {
                 conhecido.setNome(rs.getString("nm_conhecido"));
                 conhecido.setIdade(rs.getInt("qt_idade"));
                 conhecido.setDataConheceu(LocalDate.parse(rs.getString("dt_conheceu")));
-                conhecido.setAnosConhece(rs.getInt("qt_anos_conhece"));
+                conhecido.setImagem(rs.getString("im_conhecido"));
                 conhecido.setOcasiao(rs.getString("ds_ocasiao"));
                 conhecido.setGenero(rs.getString("nm_genero"));
+                
+                // Buscando a coordenada vinculada
+                conhecido.setCoordenada(CoordenadaRepository.getCoordenadaPorIdConhecido(id));
             }
         } catch(SQLException e) {
             System.out.println(e);
@@ -77,9 +93,12 @@ public class ConhecidoRepository {
                 conhecido.setNome(rs.getString("nm_conhecido"));
                 conhecido.setIdade(rs.getInt("qt_idade"));
                 conhecido.setDataConheceu(LocalDate.parse(rs.getString("dt_conheceu")));
-                conhecido.setAnosConhece(rs.getInt("qt_anos_conhece"));
+                conhecido.setImagem(rs.getString("im_conhecido"));
                 conhecido.setOcasiao(rs.getString("ds_ocasiao"));
                 conhecido.setGenero(rs.getString("nm_genero"));
+                
+                // Buscando a coordenada vinculada para cada conhecido
+                conhecido.setCoordenada(CoordenadaRepository.getCoordenadaPorIdConhecido(conhecido.getId()));
 
                 conhecidos.add(conhecido);
             }
@@ -92,6 +111,17 @@ public class ConhecidoRepository {
     }
 
     public static void atualizarConhecido(Conhecido conhecido) throws Exception {
+
+        // Atualizando a coordenada se ela existir no objeto enviado
+        if(conhecido.getCoordenada() != null) {
+            // Se a coordenada já possui ID, atualizamos. Senão, cadastramos uma nova vinculada ao conhecido.
+            if(conhecido.getCoordenada().getId() != null) {
+                CoordenadaRepository.atualizarCoordenada(conhecido.getCoordenada());
+            } else {
+                conhecido.getCoordenada().setIdConhecido(conhecido.getId());
+                CoordenadaRepository.cadastrarCoordenada(conhecido.getCoordenada());
+            }
+        }
 
         String sql = "SELECT * FROM conhecido WHERE id_conhecido = ?";
 
@@ -107,7 +137,7 @@ public class ConhecidoRepository {
                 conhecidoBanco.setNome(rs.getString("nm_conhecido"));
                 conhecidoBanco.setIdade(rs.getInt("qt_idade"));
                 conhecidoBanco.setDataConheceu(LocalDate.parse(rs.getString("dt_conheceu")));
-                conhecidoBanco.setAnosConhece(rs.getInt("qt_anos_conhece"));
+                conhecidoBanco.setImagem(rs.getString("im_conhecido"));
                 conhecidoBanco.setOcasiao(rs.getString("ds_ocasiao"));
                 conhecidoBanco.setGenero(rs.getString("nm_genero"));
             }
@@ -128,7 +158,7 @@ public class ConhecidoRepository {
             return;
         }
 
-        String[] tabela = {"nm_conhecido", "qt_idade", "dt_conheceu", "qt_anos_conhece", "ds_ocasiao", "nm_genero"};
+        String[] tabela = {"nm_conhecido", "qt_idade", "dt_conheceu", "im_conhecido", "ds_ocasiao", "nm_genero"};
 
         sql = "UPDATE conhecido SET ";
         for(int i = 0; i<6; i++) {
@@ -156,7 +186,7 @@ public class ConhecidoRepository {
                         case 0 -> pstmt.setString(i, conhecido.getNome());
                         case 1 -> pstmt.setInt(i, conhecido.getIdade());
                         case 2 -> pstmt.setString(i, conhecido.getDataConheceu().toString());
-                        case 3 -> pstmt.setInt(i, conhecido.getAnosConhece());
+                        case 3 -> pstmt.setString(i, conhecido.getImagem());
                         case 4 -> pstmt.setString(i, conhecido.getOcasiao());
                         case 5 -> pstmt.setString(i, conhecido.getGenero());
                         default -> System.out.println("Opção inválida!");
@@ -174,6 +204,17 @@ public class ConhecidoRepository {
     }
 
     public static void deletarConhecido(Integer id) throws Exception {
+        
+        // Primeiro deletamos a coordenada vinculada para manter a integridade referencial
+        try {
+            Coordenada coordenada = CoordenadaRepository.getCoordenadaPorIdConhecido(id);
+            if (coordenada.getId() != null) {
+                CoordenadaRepository.deletarCoordenada(coordenada.getId());
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao deletar coordenada vinculada: " + e);
+        }
+
         String sql = "DELETE FROM conhecido WHERE id_conhecido = ?";
 
         try(Connection conexao = MySQLConnection.conectar(); PreparedStatement pstmt = conexao.prepareStatement(sql);) {

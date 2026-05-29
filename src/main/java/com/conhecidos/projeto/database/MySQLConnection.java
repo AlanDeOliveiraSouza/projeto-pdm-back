@@ -43,27 +43,41 @@ public class MySQLConnection {
             "nm_conhecido VARCHAR(100) NOT NULL, " +  
             "qt_idade INT, " + 
             "dt_conheceu DATE, " + 
-            "qt_anos_conhece INT, " + 
+            "im_conhecido MEDIUMTEXT, " + 
             "ds_ocasiao VARCHAR(250), " +
             "nm_genero VARCHAR(10), " +
             "PRIMARY KEY (id_conhecido)" +
+        ");";
+
+        // Script de criação da tabela COORDENADA
+        String tabelaCoordenada = 
+        "CREATE TABLE IF NOT EXISTS coordenada (" +
+            "id_coordenada INT NOT NULL AUTO_INCREMENT, " +
+            "id_conhecido INT NOT NULL, " +
+            "vl_latitude DECIMAL(9,6), " +
+            "vl_longitude DECIMAL(9,6), " +
+            "vl_altitude DECIMAL(9,6), " +
+            "vl_precisao DECIMAL(6,2), " +
+            "PRIMARY KEY (id_coordenada), " +
+            "FOREIGN KEY (id_conhecido) REFERENCES conhecido (id_conhecido)" + 
         ");";
 
         // INSERÇÃO DE DADOS
 
         // Inserindo dados na tabela  CONHECIDO
         String insercaoConhecido = 
-        "INSERT IGNORE conhecido (id_conhecido, nm_conhecido, qt_idade, dt_conheceu, qt_anos_conhece, ds_ocasiao, nm_genero) VALUES " +
-        "(1, 'Juliano Silva', 20, '2024-02-10', 3, 'Na faculdade', 'Masculino'), " + 
-        "(2, 'Carol Menezes', 19, '2024-02-10', 3, 'Na faculdade', 'Feminino'), " + 
-        "(3, 'Fernanda Correa', 22, '2024-02-10', 3, 'Num restaurante', 'Feminino'), " + 
-        "(4, 'Leonardo Souza', 25, '2024-02-10', 3, 'No trabalho', 'Masculino'), " + 
-        "(5, 'Ernesto Ribeiro', 23, '2024-02-10', 3, 'Na faculdade', 'Masculino')";
+        "INSERT IGNORE conhecido (id_conhecido, nm_conhecido, qt_idade, dt_conheceu, im_conhecido, ds_ocasiao, nm_genero) VALUES " +
+        "(1, 'Juliano Silva', 20, '2024-02-10', '', 'Na faculdade', 'Masculino'), " + 
+        "(2, 'Carol Menezes', 19, '2024-02-10', '', 'Na faculdade', 'Feminino'), " + 
+        "(3, 'Fernanda Correa', 22, '2024-02-10', '', 'Num restaurante', 'Feminino'), " + 
+        "(4, 'Leonardo Souza', 25, '2024-02-10', '', 'No trabalho', 'Masculino'), " + 
+        "(5, 'Ernesto Ribeiro', 23, '2024-02-10', '', 'Na faculdade', 'Masculino')";
 
         try(Connection conexao = conectar(); Statement stmt = conexao.createStatement();) {
             // Executa os scripts no banco de dados
 
             stmt.execute(tabelaConhecido);
+            stmt.execute(tabelaCoordenada);
             stmt.execute(insercaoConhecido);
 
             System.out.println("Tabelas criadas/verificadas com sucesso!");

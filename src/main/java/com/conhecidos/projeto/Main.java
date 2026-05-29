@@ -1,6 +1,5 @@
 package com.conhecidos.projeto;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +84,6 @@ public class Main {
                 ctx.json(Map.of("success", true));
             } catch(Exception e) {
                 ctx.json(Map.of("success", false));
-                e.printStackTrace();
                 System.out.println(e);
             }
         });
